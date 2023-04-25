@@ -1,0 +1,10 @@
+server:
+  port: 0
+spring:
+  application:
+    name: account-management-ws
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8010/eureka
+
