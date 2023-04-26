@@ -5,14 +5,19 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#          lower-case-service-id: true
       routes:
         - id: users-status-check
           uri: lb://users-ws
           predicates:
-            - Path=/users/status/check
+            - Path=/users-ws/users/status/check
             - Method=GET
           filters:
             - RemoveRequestHeader=Cookie
+            - RewritePath=/users-ws/users/status/check, /users/status/check
 
 eureka:
   client:
