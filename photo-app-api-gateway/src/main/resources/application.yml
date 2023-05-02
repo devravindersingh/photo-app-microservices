@@ -18,6 +18,13 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/users-ws/users/status/check, /users/status/check
+        - id: users-h2-db
+          uri: lb://users-ws
+          predicates:
+            - Path=/users-ws/h2
+            - Method=GET
+          filters:
+            - RewritePath=/users-ws/h2, /h2-console
 
 eureka:
   client:
