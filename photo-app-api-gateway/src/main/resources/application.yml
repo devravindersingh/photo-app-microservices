@@ -13,11 +13,11 @@ spring:
         - id: users-status-check
           uri: lb://users-ws
           predicates:
-            - Path=/users-ws/users/status/check
+            - Path=/users-ws/users/status
             - Method=GET
           filters:
             - RemoveRequestHeader=Cookie
-            - RewritePath=/users-ws/users/status/check, /users/status/check
+            - RewritePath=/users-ws/users/status, /users/status/check
         - id: users-h2-db
           uri: lb://users-ws
           predicates:
@@ -25,6 +25,13 @@ spring:
             - Method=GET
           filters:
             - RewritePath=/users-ws/h2, /h2-console
+        - id: users-controller
+          uri: lb://users-ws
+          predicates:
+            - Path=/users-ws/users
+            - Method=GET,POST
+          filters:
+            - RewritePath=/users-ws/users, /users
 
 eureka:
   client:
