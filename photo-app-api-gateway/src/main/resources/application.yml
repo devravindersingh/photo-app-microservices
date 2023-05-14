@@ -32,6 +32,13 @@ spring:
             - Method=GET,POST
           filters:
             - RewritePath=/users-ws/users, /users
+        - id: users-login
+          uri: lb://users-ws
+          predicates:
+            - Path=/users-ws/signin
+            - Method=POST
+          filters:
+            - RewritePath=/users-ws/signin, /signin
 
 eureka:
   client:
