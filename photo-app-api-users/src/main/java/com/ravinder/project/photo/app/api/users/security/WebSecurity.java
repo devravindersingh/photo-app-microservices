@@ -57,6 +57,7 @@ public class WebSecurity {
                         new WebExpressionAuthorizationManager(
                                 "hasIpAddress('"+ env.getProperty("gateway.ip") +"')"))
                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+                .requestMatchers(HttpMethod.GET, "/users/status/check").permitAll()
                 .and()
                 .addFilter(authenticationFilter)
                 .authenticationManager(authenticationManager)

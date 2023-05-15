@@ -15,9 +15,11 @@ spring:
           predicates:
             - Path=/users-ws/users/status
             - Method=GET
+            - Header=Authorization, Bearer (.*)
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/users-ws/users/status, /users/status/check
+            - AuthorizationHeaderFilter
         - id: users-h2-db
           uri: lb://users-ws
           predicates:
@@ -47,3 +49,6 @@ eureka:
 
 
 # Method=GET, POST, etc - to allow other request methods
+
+token:
+  secret: toswOchetrochomes1n0c3lwriphaQeproPrIZakureqewoqlcislnajowaprewr
