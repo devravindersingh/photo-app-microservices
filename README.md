@@ -127,6 +127,109 @@ UUID.randomUUID().toString()
 - UsersDetailService is have loadUserByUsername method that we can overide and do our bussiness logic.
   - loadUserByUsername will return a User object from `org.springframework.security.core.userdetails` package
 
+## Section 14
+
+- Spring Cloud Api Gateway will be a centralized logging ,validation and routes point for whole system.
+    - it can do intial validations for the JWT tokens signature, expiration checking etc.
+    - More granular validation can be done on service side.
+- Need to create a JWT filter.
+- Not all http request will need validation like creat users.
+
+- Check http request headers for specific header. Authorization header for checking if token is present or not. Gateway will neglect request immediately if header not present.
+- add <mark>Header</mark> predicate to routes in API Gateway config. take 2 values 1 header name , 2 general pattern if needs to follow
+```
+      routes:
+        - id: users-status-check
+          uri: lb://users-ws
+          predicates:
+            - Path=/users-ws/users/status
+            - Method=GET
+            - Header=Authorization, Bearer (.*)
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/users-ws/users/status, /users/status/check
+```
+- to filter http request at API gateway add support for jwt to gateway service.
+- a seperate class to filter http requests before api gateway routes them to destination.
+- To create a ***Custom Filter*** we can use spring cloud abstract <mark>AbstractGatewayFilterFactory</mark> class.
+  ```
+  public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config>
+  ```
+- AbstractGatewayFilterFactory have GatewayFilter apply method which returns a chain of exchange.
+  ```
+    @Override
+    public GatewayFilter apply(Config config) {
+        return (exchange, chain) -> {
+            ServerHttpRequest serverHttpRequest = exchange.getRequest();
+
+            if (!serverHttpRequest.getHeaders().containsKey(HttpHeaders.AUTHORIZATION))
+                return onError(exchange, "No Authorization header", HttpStatus.UNAUTHORIZED);
+
+            String authorizationHeader = serverHttpRequest.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+            String jwt = authorizationHeader.replace("Bearer", "");
+
+            if (!isJwtValid(jwt)) {
+                return onError(exchange, "JWT token is not valid", HttpStatus.UNAUTHORIZED);
+            }
+
+            return chain.filter(exchange);
+        };
+    }
+  ```
+- AbstractGatewayFilterFactory requires a static Config class to add additional filter configurations. But usually its empty.
+  ```
+    public static class Config{
+        //put configurations here
+    }
+  ```
+- this filter will be added to application.yml config for a specific route.
+  ```
+            filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/users-ws/users/status, /users/status/check
+            - AuthorizationHeaderFilter
+  ```
+
+
+### Section 15
+- To add Global filter we can use spring <mark>GlobalFilter interface</mark>.
+  ```public class MyPostFilter implements GlobalFilter```
+- GlobalFilter interface have filter method which is used to manage filter process.
+  ```
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
+        return chain.filter(exchange).then(Mono.fromRunnable(()->{
+            LOG.info("Global post-filter executed....");
+        }));
+    }
+  ```
+- We can also use <mark>Ordered interface</mark> from spring core to make class execution ordered.
+  ```public class MyPostFilter implements GlobalFilter, Ordered```
+- Ordered interface have getOrder which return integer denoting order value.
+  ```
+    @Override
+    public int getOrder() {
+        return 1;
+    }
+  ```
+- lowest the value highest the precedence.
+- Pre filters always have low value high precedence and post filters have high value high precedence.
+- We can also create beans of global filters and combine both pre and post at the same time.
+- <mark>@Order</mark> annotation to make bean execution ordered.
+  ```
+    @Order(1)
+    @Bean
+    public GlobalFilter secondPreFilter(){
+        return ((exchange, chain) -> {
+            LOG.info("My second global pre-filter is executed....");
+            return chain.filter(exchange).then(Mono.fromRunnable(()->{
+                LOG.info("My second post-filter was executed");
+            }));
+        });
+    }
+  ```
+
 
 
 
