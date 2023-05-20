@@ -286,6 +286,7 @@ UUID.randomUUID().toString()
   `localhost:8012/application-name/profile`
   `localhost:8012/users-ws/default`
 - default is automatically set by spring if none profile provided.
+- resources with file names in application are shared between all client applications `(so application.properties, application.yml, application-*.properties etc.)`.
 
 ### Section 18
 - Config server only fetch changes to config files at the start of the service. To retrieve changes we may need to re-start all services and then config files changes gets done.
@@ -325,6 +326,15 @@ UUID.randomUUID().toString()
     ``` 
 - start service and when changes made to conifg files in remote repos, hit actuator busrefresh endpoint to reflect changes to all associated services.
 
+### Section 19
+- We can use local setup instead of remote git setup for config server.
+- we can store config files in local also and point config server to fetch from local folder.
+- add these configs in congfig server application properties
+  ```
+  spring.profile.active=native
+  spring.cloud.config.server.native.search-locations=file://${user.home}/config-repo
+  ```
+- above will behave like git repo but in local file system with config-repo being folder containing all config files.
 
 
 
