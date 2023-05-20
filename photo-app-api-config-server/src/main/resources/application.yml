@@ -1,5 +1,15 @@
 spring:
   application:
     name: PhotoAppApiConfigServer
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/devravindersingh/photo-app-config-files
+          username: devravindersingh
+          password: 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
+          clone-on-start: true
+          default-label: master
 server:
   port: 8012
+

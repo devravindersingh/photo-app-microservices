@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: api-gateway
+  config:
+    import: optional:configserver:http://localhost:8012
   cloud:
     gateway:
 #      discovery:
@@ -49,6 +51,3 @@ eureka:
 
 
 # Method=GET, POST, etc - to allow other request methods
-
-token:
-  secret: toswOchetrochomes1n0c3lwriphaQeproPrIZakureqewoqlcislnajowaprewr

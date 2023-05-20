@@ -127,7 +127,7 @@ UUID.randomUUID().toString()
 - UsersDetailService is have loadUserByUsername method that we can overide and do our bussiness logic.
   - loadUserByUsername will return a User object from `org.springframework.security.core.userdetails` package
 
-## Section 14
+## Section 15
 
 - Spring Cloud Api Gateway will be a centralized logging ,validation and routes point for whole system.
     - it can do intial validations for the JWT tokens signature, expiration checking etc.
@@ -191,7 +191,7 @@ UUID.randomUUID().toString()
   ```
 
 
-### Section 15
+### Section 16
 - To add Global filter we can use spring <mark>GlobalFilter interface</mark>.
   ```public class MyPostFilter implements GlobalFilter```
 - GlobalFilter interface have filter method which is used to manage filter process.
@@ -229,7 +229,63 @@ UUID.randomUUID().toString()
         });
     }
   ```
-
+### Section 17
+- Centralized configuration <mark>Config Server</mark>
+- Sensitive information is better to be placed at a centralized location which config server helps to get.
+- makes changes in application properties file without effecting all microservices.
+- changes can be done on a fly, no problem to client side.
+- To create a config server we need a separate service that will act like config server.
+  ```
+  	<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-config-server</artifactId>
+		</dependency>
+  ```
+- A git repo for storing application properties files.
+- config server files will have priority over local application properties.
+- Grant config server access to git repo for config files - 
+  ```
+  spring:
+    application:
+      name: PhotoAppApiConfigServer
+    cloud:
+      config:
+        server:
+          git:
+            uri: https://github.com/devravindersingh/photo-app-config-files
+            username: devravindersingh
+            password: your Access token
+            clone-on-start: true
+            default-label: master
+  server:
+    port: 8012
+  ```
+- create access token in git in ***setting/developer settings/personal access token*** 
+  - permission will be contents - read and write if both absolutely required
+- make required services config server clients by adding config server client dependency.
+  ```
+  	<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+  ```
+- make sure application name is defined in the application.yml file
+  ```
+  spring:
+    application:
+      name: users-ws
+  ```
+- add config-server property into client
+  ```
+  spring:
+    config:
+      import: optional:configserver:http://localhost:8012
+  ```
+- above in older version it was bootstrap config
+- run config server and we can access config files by 
+  `localhost:8012/application-name/profile`
+  `localhost:8012/users-ws/default`
+- default is automatically set by spring if none profile provided.
 
 
 

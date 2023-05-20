@@ -8,17 +8,12 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
+  config:
+    import: optional:configserver:http://localhost:8012
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8010/eureka
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-
-gateway:
-  ip: 192.168.1.42
-
-token:
-  expiration:
-    time: 360000
-  secret: toswOchetrochomes1n0c3lwriphaQeproPrIZakureqewoqlcislnajowaprewr
