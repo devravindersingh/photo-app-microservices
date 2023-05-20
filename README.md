@@ -287,6 +287,43 @@ UUID.randomUUID().toString()
   `localhost:8012/users-ws/default`
 - default is automatically set by spring if none profile provided.
 
+### Section 18
+- Config server only fetch changes to config files at the start of the service. To retrieve changes we may need to re-start all services and then config files changes gets done.
+- to overcome this we can use spring cloud bus amqp(advanced messaging queue protocol) with rabbitmq to broadcast changes to all config server clients.
+- it can be done by hitting actuator endpoint `https://localhost:port/busrefresh` of config server.
+-  add spring cloud starter bus and actuator dependencies to config server and only spring cloud starter bus dependency to config server clients.
+  ```
+  	<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bus-amqp</artifactId>
+		</dependency>
+    <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+  ```
+- enable busrefresh endpoint in config server
+  ```
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: busrefresh
+  ```
+- provide rabbitmq config 
+  - start rabbitmq in local, with docker easiest way
+    - `docker run -d --hostname my-rabbit --name some-rabbit -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password -p 5671:5672 -p 15671:15672 rabbitmq:3-management`
+    - 5671 of rabbitmq and 15671 of rabbitmq-ui are port forwarded to local outside docker
+  - add rabbitmq config to both server and clients
+    ```
+    spring:
+      rabbitmq:
+        host: localhost
+        port: 5671
+        username: user
+        password: password
+    ``` 
+- start service and when changes made to conifg files in remote repos, hit actuator busrefresh endpoint to reflect changes to all associated services.
 
 
 

@@ -43,6 +43,11 @@ spring:
             - Method=POST
           filters:
             - RewritePath=/users-ws/signin, /signin
+  rabbitmq:
+    host: localhost
+    port: 5671
+    username: user
+    password: password
 
 eureka:
   client:

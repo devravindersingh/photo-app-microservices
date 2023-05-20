@@ -10,6 +10,18 @@ spring:
           password: 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
           clone-on-start: true
           default-label: master
+  rabbitmq:
+    host: localhost
+    port: 5671
+    username: user
+    password: password
 server:
   port: 8012
+
+#enable bus refresh endpoint
+management:
+  endpoints:
+    web:
+      exposure:
+        include: busrefresh
 
