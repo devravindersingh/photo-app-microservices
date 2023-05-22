@@ -1,6 +1,7 @@
 package com.ravinder.project.photo.app.api.users.security;
 
 import com.ravinder.project.photo.app.api.users.service.UsersService;
+import org.apache.hc.core5.http.Method;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -58,6 +60,11 @@ public class WebSecurity {
                                 "hasIpAddress('"+ env.getProperty("gateway.ip") +"')"))
                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                 .requestMatchers(HttpMethod.GET, "/users/status/check").permitAll()
+                .requestMatchers(HttpMethod.GET,
+                        "/actuator/health",
+                        "/actuator/beans",
+                        "/actuator/mappings",
+                        "/actuator/httpexchanges").permitAll()
                 .and()
                 .addFilter(authenticationFilter)
                 .authenticationManager(authenticationManager)

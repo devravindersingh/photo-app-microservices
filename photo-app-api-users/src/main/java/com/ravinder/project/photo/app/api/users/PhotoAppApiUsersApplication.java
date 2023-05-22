@@ -2,6 +2,8 @@ package com.ravinder.project.photo.app.api.users;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
@@ -23,5 +25,10 @@ public class PhotoAppApiUsersApplication {
 	@Bean
 	public BCryptPasswordEncoder getPasswordEncoder(){
 		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public HttpExchangeRepository httpExchangeRepository(){
+		return new InMemoryHttpExchangeRepository();
 	}
 }

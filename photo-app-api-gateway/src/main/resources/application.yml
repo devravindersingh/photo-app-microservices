@@ -43,6 +43,13 @@ spring:
             - Method=POST
           filters:
             - RewritePath=/users-ws/signin, /signin
+        - id: user-ws-actuator
+          uri: lb://users-ws
+          predicates:
+            - Path=/users-ws/actuator/**
+            - Method=GET
+          filters:
+            - RewritePath=/users-ws/(?<segment>.*), /$\{segment}
   rabbitmq:
     host: localhost
     port: 5671
@@ -56,3 +63,13 @@ eureka:
 
 
 # Method=GET, POST, etc - to allow other request methods
+
+# actuator endpoint config
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: gateway,health,mappings
