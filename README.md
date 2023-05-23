@@ -336,6 +336,55 @@ UUID.randomUUID().toString()
   ```
 - above will behave like git repo but in local file system with config-repo being folder containing all config files.
 
+### Section 23
+- Encrypting sensitive information is suggested when using config server. Add one more layer of security.
+- Spring cloud config provides 2 types of encryptions 
+  - Symmetric Encryption (shared)
+    - a same Unique key to encrypt and decrypt
+    - easier to setup
+  - Asymmetric Encryption (RSA Keypair)
+    - superior encryption 
+    - unique public and private key
+    - public key for encrypting
+    - private key for decrypting
+- for older java verisons older 9 only , latest versions have it installed by default 
+  - download jce java cryptography extension from oracle
+  - extract zip file and copy in jre security folder
+  - check readme file provided in zip file
+  - reload jvm , close all java programs or just restart system.
+- Symmetric Encryption 
+  - add below config with a unique random key
+    ```
+    encrypt:
+      key: your_key
+    ```
+  - start config server and make post request `http:localhost:port/encrypt` with body raw with just string for encryption
+  - same if you want to decrypt make post request `http:localhost:port/decrypt` with body raw string to decrypt
+  - add prefix for encrypted value in application properties
+    ` '{cipher}.......value' `
+
+- Asymmetric Encryption
+  - generate keypair file by 
+    ```
+    keytool -genkeypair -alias photoAppKey -keyalg RSA -dname "CN=Ravinder Singh ,OU=RavinderProject,O=RavinderProject.com,L=Sangrur,S=Punjab,C=IN" -keypass a1b2c3d4 -keystore photoAppKey.jks -storepass a1b2c3d4
+    ```
+  - it output 
+    ```
+    Generating 2,048 bit RSA key pair and self-signed certificate (SHA256withRSA) with a validity of 90 days
+        for: CN=Ravinder Singh, OU=RavinderProject, O=RavinderProject.com, L=Sangrur, ST=Punjab, C=IN
+    ```
+  - same directory a file will be generated with name photoAppKey.jks
+  - copy the file to config server project classpath 
+  - add below config in bootstrap file, passowrd is keypass and alias is as it is from above command
+    ```
+    encrypt:
+      key-store:
+        location: classpath:key/photoAppKey.jks
+        password: a1b2c3d4
+        alias:  photoAppKey
+    ```
+  - encrypt and decrypt as same as symmertic methods.
+
 
 
 
