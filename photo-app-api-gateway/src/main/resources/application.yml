@@ -50,12 +50,6 @@ spring:
             - Method=GET
           filters:
             - RewritePath=/users-ws/(?<segment>.*), /$\{segment}
-  rabbitmq:
-    host: localhost
-    port: 5671
-    username: user
-    password: password
-
 eureka:
   client:
     service-url:

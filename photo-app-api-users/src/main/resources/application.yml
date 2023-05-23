@@ -3,18 +3,13 @@ server:
 spring:
   application:
     name: users-ws
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
+#  h2:
+#    console:
+#      enabled: true
+#      settings:
+#        web-allow-others: true
   config:
     import: optional:configserver:http://localhost:8012
-  rabbitmq:
-    host: localhost
-    port: 5671
-    username: user
-    password: password
 eureka:
   client:
     service-url:
