@@ -1,0 +1,5 @@
+encrypt:
+  key-store:
+    location: classpath:key/photoAppKey.jks
+    password: a1b2c3d4
+    alias:  photoAppKey
